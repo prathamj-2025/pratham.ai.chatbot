@@ -137,7 +137,7 @@ async function saveFeedback(rating, comment, email) {
 // ── Classify API error ─────────────────────────────────────────
 function classifyError(err) {
   const t = String(err).toLowerCase();
-  if (/quota|exhausted|billing|401|403|api.key|invalid|credential/.test(t)) return "unavailable";
+  if (/quota|exhausted|billing|400|401|403|api.key|invalid|credential/.test(t)) return "unavailable";
   if (/rate|429|resource_exhausted|overloaded/.test(t)) return "rate_limit";
   return "network";
 }
