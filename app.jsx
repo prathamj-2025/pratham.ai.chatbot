@@ -7,11 +7,29 @@
 
 // ─────────── PM glyph overlay ───────────
 function PMOverlay({ tint = "rgba(255,255,255,0.95)" }) {
+  const getScale = () => {
+    if (typeof window === "undefined") return 1;
+    const raw = Math.min(window.innerWidth / 1440, window.innerHeight / 900);
+    return Math.max(0.6, Math.min(raw, 1.4)); // clamp so it never shrinks/grows too far
+  };
+  const [scale, setScale] = React.useState(getScale);
+  React.useEffect(() => {
+    function update() { setScale(getScale()); }
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
   return (
     <div aria-hidden style={{
       position: "absolute", inset: 0, pointerEvents: "none",
-      zIndex: 0, color: tint,
+      zIndex: 0, color: tint, overflow: "hidden",
     }}>
+      <div style={{
+        position: "absolute", top: "50%", left: "50%",
+        width: 1440, height: 900,
+        transformOrigin: "center center",
+        transform: `translate(-50%, -50%) scale(${scale})`,
+      }}>
       {PM_ITEMS.map((it, i) => (
         <div key={i} style={{
           position: "absolute",
@@ -22,7 +40,7 @@ function PMOverlay({ tint = "rgba(255,255,255,0.95)" }) {
           animation: `pmDrift${i % 4} ${24 + (i % 6) * 4}s ease-in-out ${i * 0.4}s infinite alternate`,
           filter: "drop-shadow(0 2px 12px rgba(0,0,0,0.4))",
         }}>
-          <PMGlyph kind={it.kind} />
+          <PMGlyph kind={it.kind} val={it.val} />
         </div>
       ))}
       <style>{`
@@ -31,6 +49,7 @@ function PMOverlay({ tint = "rgba(255,255,255,0.95)" }) {
         @keyframes pmDrift2 { from { transform: translate(-50%, -50%) translate(0,0) } to { transform: translate(-50%, -50%) translate(10px, 6px) } }
         @keyframes pmDrift3 { from { transform: translate(-50%, -50%) translate(0,0) } to { transform: translate(-50%, -50%) translate(-8px, -10px) } }
       `}</style>
+      </div>
     </div>
   );
 }
@@ -38,26 +57,23 @@ function PMOverlay({ tint = "rgba(255,255,255,0.95)" }) {
 const PM_ITEMS = [
   { x: 8,  y: 12, kind: "bars",     size: 150, rot: -4,  op: 0.55 },
   { x: 22, y: 32, kind: "line",     size: 220, rot: 0,   op: 0.5 },
-  { x: 91, y: 14, kind: "donut",    size: 130, rot: 0,   op: 0.6 },
+  { x: 91, y: 14, kind: "donut",    size: 130, rot: 0,   op: 0.6, val: 100 },
   { x: 80, y: 30, kind: "target",   size: 150, rot: 0,   op: 0.5 },
   { x: 6,  y: 50, kind: "kanban",   size: 170, ar: 0.7, rot: -3, op: 0.55 },
   { x: 93, y: 52, kind: "gantt",    size: 200, ar: 0.55, rot: 2, op: 0.55 },
   { x: 12, y: 76, kind: "funnel",   size: 130, ar: 1.0, rot: 0,  op: 0.55 },
   { x: 30, y: 90, kind: "burndown", size: 220, ar: 0.55, rot: 0, op: 0.5 },
   { x: 70, y: 88, kind: "checklist",size: 170, ar: 0.7,  rot: 3, op: 0.55 },
-  { x: 91, y: 78, kind: "ticket",   size: 170, ar: 0.65, rot: -4, op: 0.55 },
   { x: 50, y: 6,  kind: "roadmap",  size: 320, ar: 0.18, rot: 0,  op: 0.5 },
-  { x: 50, y: 95, kind: "burndown", size: 220, ar: 0.55, rot: 0,  op: 0.4 },
   { x: 4,  y: 92, kind: "sticky",   size: 80,  ar: 1.0, rot: -8,  op: 0.6 },
-  { x: 15, y: 14, kind: "donut",    size: 90,  rot: 0,   op: 0.45 },
-  { x: 38, y: 14, kind: "donut",    size: 90,  rot: 0,   op: 0.45 },
+  { x: 15, y: 14, kind: "donut",    size: 90,  rot: 0,   op: 0.45, val: 88 },
+  { x: 38, y: 14, kind: "donut",    size: 90,  rot: 0,   op: 0.45, val: 64 },
   { x: 60, y: 18, kind: "bars",     size: 100, rot: 3,   op: 0.45 },
-  { x: 18, y: 60, kind: "ticket",   size: 130, ar: 0.65, rot: 4, op: 0.5 },
   { x: 82, y: 64, kind: "checklist",size: 130, ar: 0.7,  rot: -3, op: 0.5 },
   { x: 50, y: 80, kind: "line",     size: 240, rot: 0,   op: 0.42 },
 ];
 
-function PMGlyph({ kind }) {
+function PMGlyph({ kind, val }) {
   switch (kind) {
     case "bars": return (
       <svg viewBox="0 0 60 40" width="100%" height="100%" fill="none" stroke="currentColor" strokeWidth="1.2">
@@ -77,13 +93,18 @@ function PMGlyph({ kind }) {
         <circle cx="86" cy="10" r="2" fill="currentColor" />
       </svg>
     );
-    case "donut": return (
-      <svg viewBox="0 0 60 60" width="100%" height="100%" fill="none" stroke="currentColor" strokeWidth="6">
-        <circle cx="30" cy="30" r="22" opacity="0.25" />
-        <circle cx="30" cy="30" r="22" strokeDasharray="100 138" strokeLinecap="round" transform="rotate(-90 30 30)" />
-        <text x="30" y="34" textAnchor="middle" fontSize="12" fontFamily="JetBrains Mono, monospace" fill="currentColor" stroke="none" fontWeight="600">72%</text>
-      </svg>
-    );
+    case "donut": {
+      const pct = typeof val === "number" ? val : 72;
+      const circ = 2 * Math.PI * 22; // ≈ 138.2
+      const filled = (pct / 100) * circ;
+      return (
+        <svg viewBox="0 0 60 60" width="100%" height="100%" fill="none" stroke="currentColor" strokeWidth="6">
+          <circle cx="30" cy="30" r="22" opacity="0.25" />
+          <circle cx="30" cy="30" r="22" strokeDasharray={`${filled} ${circ - filled}`} strokeLinecap="round" transform="rotate(-90 30 30)" />
+          <text x="30" y="34" textAnchor="middle" fontSize="12" fontFamily="JetBrains Mono, monospace" fill="currentColor" stroke="none" fontWeight="600">{pct}%</text>
+        </svg>
+      );
+    }
     case "target": return (
       <svg viewBox="0 0 60 60" width="100%" height="100%" fill="none" stroke="currentColor" strokeWidth="1.2">
         <circle cx="30" cy="30" r="26" opacity="0.4" />
@@ -411,7 +432,7 @@ function AuroraLayout({
               <div style={{ fontSize: 15, color: "rgba(241,243,251,0.6)", marginBottom: 24, lineHeight: 1.5 }}>
                 I&apos;d be happy to tell you about his education, work experience, or any other aspect of his professional journey. What would you like to know?
               </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 10 }}>
                 {window.SUGGESTED_QUESTIONS.map((q) => (
                   <button key={q} onClick={() => sendChip(q)} style={{
                     background: "rgba(255,255,255,0.06)",
