@@ -127,10 +127,12 @@ async function saveEmail(email) {
 // ── Save feedback to Formspree ─────────────────────────────────
 async function saveFeedback(rating, comment, email) {
   try {
+    const payload = { rating, comment, source: "feedback" };
+    if (email && email.trim()) payload.email = email.trim();
     const r = await fetch(FEEDBACK_FORM, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({ rating, comment, email: email || "not provided", source: "feedback" }),
+      body: JSON.stringify(payload),
     });
     return r.ok;
   } catch { return false; }
