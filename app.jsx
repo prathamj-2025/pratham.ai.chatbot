@@ -401,6 +401,7 @@ function AuroraLayout({
           <span style={{ textTransform: "none", letterSpacing: "0.05em", fontSize: 13, fontWeight: 500 }}>{topLabel}</span>
         </span>
         <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <a href="/Pratham_Jain_Resume.pdf" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "7px 16px", color: "rgba(241,243,251,0.85)", cursor: "pointer", fontFamily: '"JetBrains Mono",monospace', fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", display: "inline-block" }}>Resume</a>
           <button onClick={() => setFeedbackOpen(true)} style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "7px 16px", color: "rgba(241,243,251,0.85)", cursor: "pointer", fontFamily: '"JetBrains Mono",monospace', fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" }}>Feedback</button>
           <button onClick={reset} style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "7px 16px", color: "rgba(241,243,251,0.85)", cursor: "pointer", fontFamily: '"JetBrains Mono",monospace', fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" }}>Reset Chat</button>
         </span>
