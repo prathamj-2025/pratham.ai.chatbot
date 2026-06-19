@@ -473,6 +473,11 @@ function AuroraLayout({
               {errorKind === "unavailable" && !emailSaved && (
                 <EmailCapture onSaved={() => setEmailSaved(true)} />
               )}
+              {errorKind === "unavailable" && emailSaved && (
+                <div style={{ marginTop: 12, padding: "10px 14px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 12, fontSize: 13, color: "#86efac" }}>
+                  ✓ Got it! Pratham will reach out when the bot is back.
+                </div>
+              )}
 
               {/* Follow-up chips */}
               {chips.length > 0 && !pending && (
