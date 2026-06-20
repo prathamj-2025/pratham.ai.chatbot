@@ -202,7 +202,7 @@ function useChat() {
       setErrorKind(kind);
       const msg = kind === "unavailable"
         ? (emailSaved
-            ? "Still unavailable — but no worries, Pratham has your email and will reach out as soon as the bot is back up."
+            ? "I'm so sorry for the inconvenience — Pratham.ai is temporarily unavailable right now."
             : "I'm so sorry for the inconvenience — Pratham.ai is temporarily unavailable right now. If you'd like, leave your email below and I'll notify you the moment it's back!")
         : kind === "rate_limit"
         ? "Getting a lot of questions right now! Give it a few seconds and try again."

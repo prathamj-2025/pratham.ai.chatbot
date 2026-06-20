@@ -337,6 +337,7 @@ function AuroraLayout({
     limitReached, send, reset,
   } = window.useChat();
   const [input, setInput] = React.useState("");
+  const [emailSavedAtCount, setEmailSavedAtCount] = React.useState(-1);
   const [mouse, setMouse] = React.useState({ x: 0.5, y: 0.5 });
   const [pulseKey, setPulseKey] = React.useState(0);
   const rootRef = React.useRef(null);
@@ -403,7 +404,7 @@ function AuroraLayout({
         <span style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <a href="/Pratham_Jain_Resume.pdf" target="_blank" rel="noopener noreferrer" style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "7px 16px", color: "rgba(241,243,251,0.85)", cursor: "pointer", fontFamily: '"JetBrains Mono",monospace', fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none", display: "inline-block" }}>Resume</a>
           <button onClick={() => setFeedbackOpen(true)} style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "7px 16px", color: "rgba(241,243,251,0.85)", cursor: "pointer", fontFamily: '"JetBrains Mono",monospace', fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" }}>Feedback</button>
-          <button onClick={reset} style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "7px 16px", color: "rgba(241,243,251,0.85)", cursor: "pointer", fontFamily: '"JetBrains Mono",monospace', fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" }}>Reset Chat</button>
+          <button onClick={() => { reset(); setEmailSavedAtCount(-1); }} style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 10, padding: "7px 16px", color: "rgba(241,243,251,0.85)", cursor: "pointer", fontFamily: '"JetBrains Mono",monospace', fontSize: 12, letterSpacing: "0.12em", textTransform: "uppercase" }}>Reset Chat</button>
         </span>
       </div>
 
@@ -471,9 +472,9 @@ function AuroraLayout({
 
               {/* Email capture on unavailable error */}
               {errorKind === "unavailable" && !emailSaved && (
-                <EmailCapture onSaved={() => setEmailSaved(true)} />
+                <EmailCapture onSaved={() => { setEmailSaved(true); setEmailSavedAtCount(messages.length); }} />
               )}
-              {errorKind === "unavailable" && emailSaved && (
+              {errorKind === "unavailable" && emailSaved && messages.length === emailSavedAtCount && (
                 <div style={{ marginTop: 12, padding: "10px 14px", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)", borderRadius: 12, fontSize: 13, color: "#86efac" }}>
                   ✓ Got it! Pratham will reach out when the bot is back.
                 </div>
